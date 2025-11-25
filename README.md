@@ -3,6 +3,7 @@ Crearea și Pregătirea Setului de Date (Dataset)
 Pentru proiectul „Detectarea Defectelor în Sticlă folosind Rețele Neuronale”, setul de date a fost construit prin combinarea mai multor dataset-uri publice care conțin imagini cu defecte specifice industriei sticlei. Dataset-ul final este format exclusiv din imagini (RGB) etichetate, împărțite ulterior în train, validation și test.
 
 3.1. Colectarea dataset-urilor
+
 Pentru a acoperi toate tipurile de defecte relevante, am selectat cinci categorii principale:
   
   -Scratches (zgârieturi)
@@ -17,6 +18,7 @@ Pentru a acoperi toate tipurile de defecte relevante, am selectat cinci categori
 Pentru fiecare categorie, au fost descărcate unul sau mai multe dataset-uri publice în format COCO, de pe Roboflow sau Kaggle.
 
 3.2. Standardizarea și unificarea dataset-urilor
+
 Dataset-urile descărcate au avut formate, clase și rezoluții diferite. Pentru a obține un dataset unificat, am efectuat:
 
   -uniformizarea claselor (toate clasele au fost redenumite în: Scratch, Crack, Inclusion, Bubble, EdgeChip, OK)
@@ -44,6 +46,7 @@ Imaginile brute prezentau variații mari în format și calitate. În etapa de c
   
 
 3.4. Împărțirea dataset-ului în seturi dedicate
+
 Pentru antrenarea și evaluarea corectă a rețelei neuronale, dataset-ul a fost împărțit după standardele ML:
 
   -70% — train
@@ -56,6 +59,7 @@ Pentru antrenarea și evaluarea corectă a rețelei neuronale, dataset-ul a fost
 Împărțirea este stratificată, astfel încât fiecare tip de defect să fie reprezentat proporțional în fiecare subset.
 
 3.5. Rezultatul final al dataset-ului
+
 Dataset-ul final folosit pentru proiect conține:
 
   -imagini preprocesate (RGB, 256×256 px)
