@@ -1,12 +1,18 @@
 Crearea și Pregătirea Setului de Date (Dataset)
+
 Pentru proiectul „Detectarea Defectelor în Sticlă folosind Rețele Neuronale”, setul de date a fost construit prin combinarea mai multor dataset-uri publice care conțin imagini cu defecte specifice industriei sticlei. Dataset-ul final este format exclusiv din imagini (RGB) etichetate, împărțite ulterior în train, validation și test.
 
 3.1. Colectarea dataset-urilor
 Pentru a acoperi toate tipurile de defecte relevante, am selectat cinci categorii principale:
+  
   -Scratches (zgârieturi)
+  
   -Cracks (fisuri)
+  
   -Inclusions (incluziuni/impurități în sticlă)
+  
   -Bubbles (bule de aer)
+  
 
 Pentru fiecare categorie, au fost descărcate unul sau mai multe dataset-uri publice în format COCO, de pe Roboflow sau Kaggle.
 
