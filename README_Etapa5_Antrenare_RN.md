@@ -1,4 +1,4 @@
-# 📘 README – Etapa 5: Configurarea și Antrenarea Modelului RN
+# README – Etapa 5: Configurarea și Antrenarea Modelului RN
 
 Disciplina: Rețele Neuronale  
 Instituție: POLITEHNICA București – FIIR  
@@ -14,7 +14,7 @@ Bubble, Crack, Inclusion, Scratch, OK.
 
 Antrenarea s-a realizat folosind transfer learning cu arhitectura MobileNetV2, cu straturile convoluționale de bază înghețate și antrenarea doar a capului de clasificare.
 
-⚙️ Hiperparametri utilizați și justificare
+Hiperparametri utilizați și justificare
 
 Hiperparametru  	Valoare	        Justificare
 Optimizer   	    Adam	        Optimizator adaptiv, stabil pentru CNN-uri cu transfer learning
@@ -39,7 +39,7 @@ Metricile au fost salvate automat în:
 
 results/test_metrics.json
 
-⚠️ Observație importantă privind performanța ridicată
+Observație importantă privind performanța ridicată
 
 Deși metricile obținute sunt foarte ridicate, acestea trebuie interpretate în contextul datasetului curent.
 
@@ -54,13 +54,13 @@ variație redusă a condițiilor de iluminare și perspectivă.
 Acest lucru poate conduce la o supraestimare a performanței reale în condiții industriale.
 În etapa următoare, datasetul va fi refăcut de la zero, folosind date originale capturate în condiții reale de producție, pentru o evaluare mai realistă a performanței modelului.
 
-👉 Modelul este însă corect antrenat, evaluat și integrat, conform cerințelor Etapei 5 – Nivel 1.
+Modelul este însă corect antrenat, evaluat și integrat, conform cerințelor Etapei 5 – Nivel 1.
 
-📁 Istoricul Antrenării Modelului
+Istoricul Antrenării Modelului
 
 Pe durata antrenării modelului, toate valorile relevante pentru fiecare epocă au fost salvate automat într-un fișier de tip CSV, pentru asigurarea trasabilității și posibilitatea de analiză ulterioară.
 
-📄 Fișier:
+Fișier:
 
 results/training_history.csv
 
@@ -107,7 +107,7 @@ documentarea evoluției performanței în etapele viitoare ale proiectului.
 
 
 
-🖥️ Integrarea Modelului Antrenat în UI
+Integrarea Modelului Antrenat în UI
 
 Modelul antrenat (models/trained_model.h5) a fost integrat într-o aplicație Streamlit, care permite:
 
@@ -122,3 +122,4 @@ afișarea clasei prezise și a scorului de încredere.
 O demonstrație vizuală a inferenței reale este disponibilă în:
 
 docs/screenshots/inference_real.png
+
