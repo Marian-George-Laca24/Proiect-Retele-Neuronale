@@ -1,74 +1,181 @@
-Crearea și Pregătirea Setului de Date (Dataset)
+# README – Etapa 3 -Analiza si Pregatirea Setului de Date pentru Retele Neuronale
 
-Pentru proiectul „Detectarea Defectelor în Sticlă folosind Rețele Neuronale”, setul de date a fost construit prin combinarea mai multor dataset-uri publice care conțin imagini cu defecte specifice industriei sticlei. Dataset-ul final este format exclusiv din imagini (RGB) etichetate, împărțite ulterior în train, validation și test.
+**Disciplina:** Rețele Neuronale  
+**Instituție:** POLITEHNICA București – FIIR  
+**Student:** Laca Marian-George
+**Link Repository GitHub:** https://github.com/Marian-George-Laca24/Proiect-Retele-Neuronale.git 
+**Data predării:** 15.01.2026
 
-3.1. Colectarea dataset-urilor
+---
+---
 
-Pentru a acoperi toate tipurile de defecte relevante, am selectat cinci categorii principale:
-  
-  -Scratches (zgârieturi)
-  
-  -Cracks (fisuri)
-  
-  -Inclusions (incluziuni/impurități în sticlă)
-  
-  -Bubbles (bule de aer)
-  
+## Introducere
 
-Pentru fiecare categorie, au fost descărcate unul sau mai multe dataset-uri publice în format COCO, de pe Roboflow sau Kaggle.
+Această etapă descrie procesul de colectare, analiză și pregătire a setului de date utilizat în proiectul de detecție a defectelor în sticlă. Scopul Etapei 3 este obținerea unui dataset coerent, bine documentat și compatibil cu antrenarea rețelelor neuronale utilizate ulterior în proiect.
 
-3.2. Standardizarea și unificarea dataset-urilor
+Față de etapele inițiale ale proiectului, această versiune a dataset-ului reflectă o schimbare de abordare, prin trecerea de la un set de date preluat din surse publice la un dataset majoritar original, colectat și adnotat manual, în scop didactic.
 
-Dataset-urile descărcate au avut formate, clase și rezoluții diferite. Pentru a obține un dataset unificat, am efectuat:
+---
 
-  -uniformizarea claselor (toate clasele au fost redenumite în: Scratch, Crack, Inclusion, Bubble, EdgeChip, OK)
-  
-  -conversia tuturor etichetelor în COCO JSON
-  
-  -combinarea tuturor anotărilor într-un singur fișier COCO mare
-  
-  -mutarea tuturor imaginilor într-un singur spațiu comun
-  
+## 1. Structura Repository-ului (Etapa 3)
 
-3.3. Curățarea imaginilor
+proiect-rn-[Marian-George-Laca24]/
+├── data/
+│ ├── raw/ # imagini brute, neprocesate
+│ ├── train/
+│ │ ├── images/
+│ │ └── labels/
+│ ├── valid/
+│ │ ├── images/
+│ │ └── labels/
+│ ├── test/
+│ │ ├── images/
+│ │ └── labels/
+│ └── data.yaml # definirea claselor și a path-urilor (YOLO)
+│
+├── src/
+│ └── preprocessing/ # scripturi inițiale de preprocesare (istoric)
+│
+├── docs/
+│ └── datasets/ # documentație dataset (opțional)
+│
+└── requirements.txt
 
-Imaginile brute prezentau variații mari în format și calitate. În etapa de curățare au fost aplicate:
 
-  -conversia la format RGB
-  
-  -redimensionarea imaginilor la 256×256 px
-  
-  -eliminarea duplicatelor
-  
-  -redenumirea uniformă a fișierelor
-  
-  -normalizarea valorilor pixelilor (0–1)
-  
 
-3.4. Împărțirea dataset-ului în seturi dedicate
+---
 
-Pentru antrenarea și evaluarea corectă a rețelei neuronale, dataset-ul a fost împărțit după standardele ML:
+## 2. Descrierea Setului de Date
 
-  -70% — train
-  
-  -15% — validation
-  
-  -15% — test
-  
+### 2.1 Sursa datelor
 
-Împărțirea este stratificată, astfel încât fiecare tip de defect să fie reprezentat proporțional în fiecare subset.
+- **Origine:** Dataset propriu, colectat de student  
+- **Mod de achiziție:** Fotografiere directă a probelor de sticlă  
+- **Echipament:** Cameră foto telefon mobil  
+- **Mediu:** Non-industrial (condiții de laborator / casnice)  
+- **Iluminare:** Nespecializată, variabilă  
+- **Adnotare:** Manuală, realizată în platforma Roboflow  
 
-3.5. Rezultatul final al dataset-ului
+Dataset-ul a fost construit în scop didactic, pentru a permite înțelegerea completă a fluxului de lucru dintr-un proiect de detecție vizuală.
 
-Dataset-ul final folosit pentru proiect conține:
+---
 
-  -imagini preprocesate (RGB, 256×256 px)
-  
-  -etichete standardizate pentru 6 clase
-  
-  -foldere organizate train/validation/test
-  
-  -fișier COCO final cu toate anotările combinate
-  
+### 2.2 Caracteristicile dataset-ului
 
-Setul de date este acum compatibil cu TensorFlow/Keras și pregătit pentru etapa de antrenare a rețelei neuronale.
+- **Număr total imagini:** 578  
+- **Număr imagini originale:** 443  
+  - reprezintă aproximativ **76,6%** din dataset  
+- **Tip date:** Imagini RGB  
+- **Format fișiere:** JPG / PNG  
+- **Rezoluție imagini:** variabilă  
+- **Rezoluție de intrare în rețea:** 1024 px (redimensionare aplicată la antrenare)
+
+---
+
+### 2.3 Clasele dataset-ului
+
+Dataset-ul conține **4 clase de defecte**, specifice industriei sticlei:
+
+- `bubble` – bule de aer  
+- `crack` – fisuri  
+- `scratch` – zgârieturi  
+- `inclusion` – incluziuni / impurități  
+
+În plus, dataset-ul include și **imagini cu sticlă intactă (OK)**, care:
+
+- nu reprezintă o clasă de defect,
+- sunt utilizate ca exemple negative,
+- sunt importante pentru reducerea detecțiilor false (false positives).
+
+---
+
+## 3. Analiza Exploratorie a Datelor (EDA) – Sintetic
+
+### 3.1 Observații generale
+
+Analiza exploratorie a dataset-ului a evidențiat:
+
+- variații semnificative de iluminare între imagini,
+- diferențe de contrast și textură ale suprafeței de sticlă,
+- defecte de dimensiuni variabile, unele foarte mici,
+- distribuție neuniformă a claselor.
+
+### 3.2 Probleme identificate
+
+- dezechilibru de clasă, în special pentru defectele de tip `inclusion`,
+- defecte de dimensiuni reduse, dificil de distins de fundal,
+- reflexii și zgomot vizual care pot fi confundate cu defecte reale,
+- lipsa unui mediu industrial controlat.
+
+---
+
+## 4. Preprocesarea Datelor
+
+### 4.1 Curățarea datelor
+
+Au fost aplicate următoarele operații:
+
+- eliminarea imaginilor duplicate,
+- verificarea și corectarea etichetelor greșite,
+- uniformizarea denumirilor claselor,
+- verificarea consistenței fișierelor de adnotare.
+
+---
+
+### 4.2 Adnotarea datelor
+
+Adnotarea a fost realizată manual, pentru toate cele **578 de imagini**, folosind platforma Roboflow:
+
+- fiecare defect a fost încadrat cu bounding box,
+- fiecare bounding box a fost asociat unei clase,
+- procesul a fost realizat integral de student.
+
+Acest tip de adnotare este fezabil în scop didactic, dar nu ar fi scalabil într-un flux industrial real fără instrumente semi-automate sau automate.
+
+---
+
+### 4.3 Structurarea dataset-ului
+
+Dataset-ul a fost împărțit în:
+
+- **Train:** ~70%  
+- **Validation:** ~15%  
+- **Test:** ~15%  
+
+Principii respectate:
+
+- separare clară între seturi,
+- evitarea scurgerii de informație (data leakage),
+- păstrarea proporțiilor relative între clase.
+
+---
+
+### 4.4 Format final
+
+Datele sunt organizate conform standardului YOLO, utilizând:
+
+- foldere separate pentru imagini și etichete,
+- fișierul `data.yaml` care definește:
+  - clasele,
+  - path-urile pentru train / validation / test.
+
+---
+
+## 5. Fișiere Generate în Această Etapă
+
+- `data/raw/` – imagini brute  
+- `data/train/`, `data/valid/`, `data/test/` – seturi finale  
+- `data.yaml` – configurare dataset YOLO  
+- `src/preprocessing/` – scripturi inițiale de preprocesare (istoric)  
+
+---
+
+## 6. Stare Etapă
+
+- [x] Structură repository configurată  
+- [x] Dataset colectat și analizat  
+- [x] Adnotare manuală completă  
+- [x] Seturi train / validation / test generate  
+- [x] Dataset pregătit pentru antrenarea modelelor de detecție  
+
+---
