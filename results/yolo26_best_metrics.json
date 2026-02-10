@@ -1,0 +1,12 @@
+{
+  "model": "runs/detect/results_yolo/train_yolo26_v2_finetune_best/weights/best.pt",
+  "data": "data/yolo26/data.yaml",
+  "imgsz": 1024,
+  "metrics": {
+    "mAP50_95": 0.5191739316052493,
+    "mAP50": 0.7118488606890412,
+    "mAP75": 0.5957768980878544,
+    "precision_mean": 0.7684803181440357,
+    "recall_mean": 0.6481072540089786
+  }
+}
