@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 4
+names: ['bubble', 'crack', 'inclusion', 'scratch']
+
+roboflow:
+  workspace: something-hnhfo
+  project: glass-defect-detection2
+  version: 2
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/something-hnhfo/glass-defect-detection2/dataset/2
