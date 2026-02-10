@@ -16,32 +16,47 @@ st.set_page_config(
     layout="wide"
 )
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]  # .../proiect
-MODEL_PATH = PROJECT_ROOT / "models" / "yolo26" / "best.pt"
-
 DEFAULT_CONF = 0.25
 DEFAULT_IOU = 0.45
-
 DEVICE = 0 if torch.cuda.is_available() else "cpu"
+
+
+# =========================
+# PATH RESOLUTION (ROBUST)
+# =========================
+def find_project_root(start: Path) -> Path:
+    """
+    Caută root-ul proiectului urcând în sus până găsește repere clare.
+    """
+    current = start.resolve()
+    for _ in range(8):  # max 8 nivele în sus
+        if (current / "models").exists() and (current / "src").exists() and (current / "data").exists():
+            return current
+        if (current / "requirements.txt").exists():
+            return current
+        current = current.parent
+    # fallback: păstrăm vechiul comportament
+    return start.resolve().parents[2]
+
+
+PROJECT_ROOT = find_project_root(Path(__file__).parent)
+MODEL_PATH = PROJECT_ROOT / "models" / "yolo26" / "best.pt"
 
 
 # =========================
 # HELPERS
 # =========================
 @st.cache_resource
-def load_yolo_model(model_path: str):
+def load_yolo_model(model_path: str, model_mtime: float):
+    # model_mtime este doar ca să invalideze cache-ul când se schimbă fișierul
+    _ = model_mtime
     return YOLO(model_path)
 
 
 def draw_boxes(image: Image.Image, boxes, names, conf_threshold: float):
-    """
-    boxes: ultralytics Results[0].boxes (sau listă goală)
-    names: dict {class_id: class_name}
-    """
     img = image.convert("RGB").copy()
     draw = ImageDraw.Draw(img)
 
-    # Font fallback (Windows/Linux safe)
     try:
         font = ImageFont.truetype("arial.ttf", 18)
     except Exception:
@@ -58,18 +73,14 @@ def draw_boxes(image: Image.Image, boxes, names, conf_threshold: float):
         x1, y1, x2, y2 = [float(v) for v in b.xyxy[0].tolist()]
         label = names.get(cls_id, str(cls_id))
 
-        # rectangle
         draw.rectangle([x1, y1, x2, y2], outline="red", width=3)
 
-        # label background (dimensiune corectă)
         text = f"{label} {conf:.2f}"
         bbox = draw.textbbox((0, 0), text, font=font)
         tw = bbox[2] - bbox[0]
         th = bbox[3] - bbox[1]
 
-        # evităm să ieșim în afara imaginii sus
         y_text_top = max(0, y1 - th - 6)
-
         draw.rectangle([x1, y_text_top, x1 + tw + 8, y_text_top + th + 6], fill="red")
         draw.text((x1 + 4, y_text_top + 3), text, fill="white", font=font)
 
@@ -85,8 +96,10 @@ def draw_boxes(image: Image.Image, boxes, names, conf_threshold: float):
 def ensure_model_exists():
     if not MODEL_PATH.exists():
         st.error(
-            f"Nu găsesc modelul YOLO la: {MODEL_PATH}\n\n"
-            "Mută fișierul `best.pt` în `models/yolo/best.pt`."
+            "Nu găsesc modelul YOLO.\n\n"
+            f"**MODEL_PATH:** `{MODEL_PATH}`\n\n"
+            "Asigură-te că fișierul `best.pt` există în:\n"
+            "`models/yolo26/best.pt`"
         )
         st.stop()
 
@@ -94,14 +107,17 @@ def ensure_model_exists():
 # =========================
 # UI
 # =========================
-st.title(" Sistem de Detectare Defecte pe Sticlă (YOLO)")
+st.title("Sistem de Detectare Defecte pe Sticlă (YOLO)")
 st.write(
     "Aplicația utilizează un model YOLO antrenat pentru **detecția localizată** a defectelor "
     "(bounding box + etichetă + scor)."
 )
 
+
 ensure_model_exists()
-model = load_yolo_model(str(MODEL_PATH))
+
+model_mtime = MODEL_PATH.stat().st_mtime
+model = load_yolo_model(str(MODEL_PATH), model_mtime)
 
 with st.sidebar:
     st.header("Setări inferență")
@@ -112,7 +128,6 @@ with st.sidebar:
     st.caption("Dacă ai erori de memorie (CUDA OOM), scade imgsz.")
 
 uploaded = st.file_uploader("Încărcați o imagine (JPG/PNG):", type=["jpg", "jpeg", "png"])
-
 
 if uploaded is None:
     st.info("Încarcă o imagine ca să rulezi detecția.")
@@ -139,13 +154,7 @@ boxes = res0.boxes if res0.boxes is not None else []
 annotated, dets = draw_boxes(image, boxes, res0.names, conf_th)
 
 st.subheader("Rezultat detecție (YOLO)")
-st.image(
-    annotated,
-    width=700,
-    caption="Imagine cu defecte detectate"
-)
-
-
+st.image(annotated, width=700, caption="Imagine cu defecte detectate")
 
 st.divider()
 
@@ -158,7 +167,6 @@ else:
     st.error(f"Defecte detectate: {len(dets)}")
     dets = sorted(dets, key=lambda x: x["confidence"], reverse=True)
 
-    # sumar pe clase
     counts = {}
     for d in dets:
         counts[d["label"]] = counts.get(d["label"], 0) + 1
